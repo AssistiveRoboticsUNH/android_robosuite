@@ -50,7 +50,7 @@ class Android(Device):
         rot_sensitivity (float): Magnitude of scale input rotation commands scaling
     """
 
-    def __init__(self, serverIP, pos_sensitivity=1.0, rot_sensitivity=1.0):
+    def __init__(self, serverIP, pos_sensitivity=1.0, rot_sensitivity=0.05):
 
         self._display_controls()
         self._reset_internal_state()
@@ -163,15 +163,22 @@ class Android(Device):
             s=0.005
             self.pos[0] += self._pos_step * gx*s  # x
             self.pos[1] -= self._pos_step * gy*s  # y
-            
-            self.pos[2] += yd * spinner_strength * 0.00002
+
+         
+            self.rot_sensitivity=0.02
+            # print('xd', xd, spinner_angle, spinner_dx, spinner_dy)
+
+            if spinner_dx>80:
+                self.on_press(AKey('v'))
+            elif spinner_dx < 20:
+                self.on_press(AKey('c'))
+            else: 
+                self.pos[2] += yd * spinner_strength * 0.00001
+
         
 
         else: 
-            if spinner_strength > 10:
-                xd= np.cos(np.deg2rad(spinner_angle))
-                yd= np.sin(np.deg2rad(spinner_angle))
-                
+            if spinner_strength > 10:  
                 self.pos[1] += xd * spinner_strength * 0.00002
                 self.pos[0] -= yd * spinner_strength * 0.00002
 
