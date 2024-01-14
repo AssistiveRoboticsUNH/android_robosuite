@@ -1,3 +1,6 @@
+This script work as a driver to use android app sixdof (https://github.com/AssistiveRoboticsUNH/sixdof) as a device in robosuite.
+
+ 
 
 ### requirement
 ```
