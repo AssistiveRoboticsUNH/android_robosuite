@@ -66,10 +66,7 @@ class Android(Device):
         self.listener = Listener(on_press=self.on_press, on_release=self.on_release)
 
         # start listening
-        self.listener.start()
-
-        
-        
+        self.listener.start() 
 
         context = zmq.Context() 
         print("Connecting to hello world server…")
