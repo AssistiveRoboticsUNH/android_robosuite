@@ -163,12 +163,12 @@ class Android(Device):
 
             # gx=gx**3 #test.
             # gy=gy**3 
-            # self._pos_step = 0.00005
+            # self._pos_step = 0.00004
 
 
-            gx=gx**2 * np.sign(gx) #test.
-            gy=gy**2 * np.sign(gy)
-            self._pos_step = 0.0003
+            # gx=gx**2 * np.sign(gx) #test.
+            # gy=gy**2 * np.sign(gy)
+            # self._pos_step = 0.0003
             
             self.pos[0] += self._pos_step * gx  # x
             self.pos[1] -= self._pos_step * gy  # y
@@ -176,12 +176,12 @@ class Android(Device):
             
 
          
-            self.rot_sensitivity=0.02
+            self.rot_sensitivity=0.03
             # print('xd', xd, spinner_angle, spinner_dx, spinner_dy)
 
-            if spinner_dx>80:
+            if spinner_dx>70:
                 self.on_press(AKey('v'))
-            elif spinner_dx < 20:
+            elif spinner_dx < 30:
                 self.on_press(AKey('c'))
             else: 
                 self.pos[2] += yd * spinner_strength * 0.00003 #was 0.00001
