@@ -57,7 +57,7 @@ class Android(Device):
 
         self._reset_state = 0
         self._enabled = False
-        self._pos_step = 0.05
+        self._pos_step = 0.0005 #was 0.00025
 
         self.pos_sensitivity = pos_sensitivity
         self.rot_sensitivity = rot_sensitivity
@@ -159,10 +159,21 @@ class Android(Device):
             
         self.prev_gripper_pressed=pressed
  
-        if enable_gyro:
-            s=0.005
-            self.pos[0] += self._pos_step * gx*s  # x
-            self.pos[1] -= self._pos_step * gy*s  # y
+        if enable_gyro: #spinner_as_z in spinner mode.
+
+            # gx=gx**3 #test.
+            # gy=gy**3 
+            # self._pos_step = 0.00005
+
+
+            gx=gx**2 * np.sign(gx) #test.
+            gy=gy**2 * np.sign(gy)
+            self._pos_step = 0.0003
+            
+            self.pos[0] += self._pos_step * gx  # x
+            self.pos[1] -= self._pos_step * gy  # y
+
+            
 
          
             self.rot_sensitivity=0.02
@@ -173,7 +184,7 @@ class Android(Device):
             elif spinner_dx < 20:
                 self.on_press(AKey('c'))
             else: 
-                self.pos[2] += yd * spinner_strength * 0.00001
+                self.pos[2] += yd * spinner_strength * 0.00003 #was 0.00001
 
         
 
