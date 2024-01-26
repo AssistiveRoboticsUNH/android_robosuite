@@ -62,6 +62,8 @@ class Android(Device):
         self.pos_sensitivity = pos_sensitivity
         self.rot_sensitivity = rot_sensitivity
 
+        self._pos_step = self._pos_step * self.pos_sensitivity
+
         # # make a thread to listen to keyboard and register our callback functions
         self.listener = Listener(on_press=self.on_press, on_release=self.on_release)
 
@@ -87,6 +89,8 @@ class Android(Device):
         self.last_spinner_dy = 0
         
         self.gripper_pressed = False
+
+        self.last_gripper_toggle_time=time.time()
 
         thread.start_new_thread(self.run, ())
         
@@ -133,13 +137,21 @@ class Android(Device):
         yd= np.sin(np.deg2rad(spinner_angle))
         
         # self.grasp = self.latest_msg['gripper']
+        toggle_detected=False
         if self.gripper_pressed and not self.latest_msg['gripper']:
             self.grasp = not self.grasp
             self.gripper_pressed = False
+            toggle_detected=True
         elif not self.gripper_pressed and self.latest_msg['gripper']:
             self.gripper_pressed = True
             self.grasp = not self.grasp
+            toggle_detected=True
         
+        if toggle_detected:
+            if time.time() - self.last_gripper_toggle_time <0.3:  #discard this toggle.
+                self.grasp = not self.grasp
+                print('discarding toggle')
+            self.last_gripper_toggle_time=time.time()
         
         # if self.latest_msg['button']=='gripper' and self.latest_msg['pressed']:
         #     self.gripper_pressed = True
@@ -168,12 +180,24 @@ class Android(Device):
 
             # gx=gx**2 * np.sign(gx) #test.
             # gy=gy**2 * np.sign(gy)
-            # self._pos_step = 0.0003
-            
-            self.pos[0] += self._pos_step * gx  # x
-            self.pos[1] -= self._pos_step * gy  # y
+            # self._pos_step = 0.0002
+
+            self._pos_step = 0.0004
+            kx=self._pos_step
+            ky=self._pos_step
+
+            sens=0.00001
+            if abs(gx)<3.5:
+                kx=10*abs(gx)*sens
+            if abs(gy)<2.5:
+                ky=10*abs(gy)*sens
+ 
 
             
+            self.pos[0] += kx * gx  # x
+            self.pos[1] -= ky * gy  # y
+
+            # print(f'gx={gx}, gy={gy}, pos={self.pos}')
 
          
             self.rot_sensitivity=0.03
